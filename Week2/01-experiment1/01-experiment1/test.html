@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style type="text/css">
+      .name_para {
+        font-size: 20px;
+      }
+
+      form p::first-letter {
+        color: green;
+        font-size: 20px;
+      }
+
+      input[x="y"] {
+        background-color: magenta;
+      }
+
+      input[x="Z"] {
+        background-color: orange;
+      }
+
+      form > input:hover {
+        background-color: red;
+      }
+
+      #personal {
+        color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <p class="name_para">Enter Name</p>
+      <input type="text" x="Z" />
+      <div id="personal">
+        <p>Enter Age</p>
+
+        <input type="text" x="y" />
+      </div>
+      <div id="official">
+        <p>Enter Roll Number</p>
+        <input type="text" x="y" />
+      </div>
+    </form>
+  </body>
+</html>
