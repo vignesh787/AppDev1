@@ -1,91 +1,47 @@
-import sqlalchemy
-from sqlalchemy import create_engine
-from sqlalchemy import Table, Column , Integer, String, ForeignKey
-from sqlalchemy import select 
+import os
+from flask import Flask
+from flask import render_template
+from flask import request
+from flask_sqlalchemy import SQLAlchemy
+current_dir = os.path.abspath(os.path.dirname(__file__))
 
-from sqlalchemy.orm import Session
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.orm import relationship
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///"+os.path.join(current_dir,"testdb.sqlite3")
+db=SQLAlchemy()
+db.init_app(app)
+app.app_context().push()
 
-Base = declarative_base() 
-
-class User(Base):
+class User(db.Model):
     __tablename__='user'
-    user_id = Column(Integer,autoincrement=True,primary_key=True)
-    username = Column(String, unique=True)
-    email = Column(String, unique=True)
+    user_id = db.Column(db.Integer,autoincrement=True,primary_key=True)
+    username = db.Column(db.String, unique=True)
+    email = db.Column(db.String, unique=True)
     
-class Article(Base):
+class Article(db.Model):
     __tablename__='article'
-    article_id = Column(Integer,autoincrement=True,primary_key=True)
-    title = Column(String)
-    content = Column(String)
-    authors = relationship("User", secondary="article_authors")
+    article_id = db.Column(db.Integer,autoincrement=True,primary_key=True)
+    title = db.Column(db.String)
+    content = db.Column(db.String)
+    authors = db.relationship("User", secondary="article_authors")
     
-class ArticleAuthors(Base):
+class ArticleAuthors(db.Model):
     __tablename__='article_authors'
-    user_id = Column(Integer,ForeignKey("user.user_id"),primary_key=True,nullable=False)
-    article_id = Column(Integer,ForeignKey("article.article_id"),primary_key=True,nullable=False)
+    user_id = db.Column(db.Integer,db.ForeignKey("user.user_id"),primary_key=True,nullable=False)
+    article_id = db.Column(db.Integer,db.ForeignKey("article.article_id"),primary_key=True,nullable=False)
     
-engine=create_engine("sqlite:///./testdb.sqlite3")
-
-if __name__=='__main__':
-    with Session(engine,autoflush=False) as session:
-        session.begin()
-        try:
-            author=session.query(User).filter(User.username=="vignesh").one()
-            
-            article = Article(title="Using relationship", content = "User relationship for Insert")
-            
-            article.authors.append(author)
-            
-            session.add(article)
-        
-
-
-
-
-#            article=Article(title="my new application",content="Python ORM")
-#            session.add(article)
-#            session.flush()
-#            print("--- Get Article Id ---")
-#            print(article.article_id)
-            #raise Exception("Dummy Error")
-#            article_authors= ArticleAuthors(user_id=1,article_id=article.article_id)
-#            session.add(article_authors)
-        except:
-            print("Rolling back")
-            session.rollback()
-            raise
-        else:
-            print("No exception . Hence Commit")
-            session.commit()
-           
-           
-
-
-
-
-
-
-
-
-
-
-
-#    with Session(engine) as session:
-#        articles = session.query(Article).filter(Article.article_id==1).all()
-#        for article in articles:
-#            print("Article : {}".format(article.title))
-#            for author in article.authors:
-#                print("Author : {}".format(author.username))
-
-
-
-#    stmt = select(User)
-#    print("---------------Query--------------")
-#    print(stmt)
-#    with engine.connect() as conn:
-#        print("---------------Result--------------")
-#        for row in conn.execute(stmt):
-#            print(row)
+@app.route("/", methods=["GET","POST"])    
+def articles():
+    articles = Article.query.all()
+    print(articles)
+    return render_template("articles.html",articles=articles)
+    
+@app.route("/articles_by/<user_name>" , methods=["GET","POST"])
+def articles_by_author(user_name):
+    articles=Article.query.filter(Article.authors.any(username=user_name))
+    return render_template("articles_by_author.html",articles=articles,username =user_name)
+    
+    
+if __name__ == '__main__':
+    app.run(host='0.0.0.0',
+    debug=True,
+    port=8080)
