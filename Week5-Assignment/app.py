@@ -7,12 +7,10 @@ from sqlalchemy import exc
 
 app = Flask(__name__)
 
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///database.sqlite3'
 db=SQLAlchemy()
 db.init_app(app)
 app.app_context().push()
-engine = db.create_engine('sqlite:///database.sqlite3',{})
-session = Session(engine)
-
 
 class course(db.Model):
     __tablename__='course'
@@ -21,7 +19,7 @@ class course(db.Model):
     course_name = db.Column(db.String, unique=True)
     course_description = db.Column(db.String, unique=True)
     students = db.relationship('enrollments',backref='students')
-    
+      
 class student(db.Model):
     __tablename__='student'
     student_id = db.Column(db.Integer,autoincrement=True,primary_key=True)
@@ -61,13 +59,14 @@ def addStudentConfirm():
     try:
         
        #add the course in filter list and get the course object from db 
-        student_obj = student(roll,firstName,lastName)
-        session.add(student_obj)
+        student_obj = student(roll_number=roll,first_name=firstName,last_name=lastName)
+        db.session.add(student_obj)
         
         if len(course1)>0:
             for code in course1:
-                enrollment=enrollments(roll,int(code[7]))
-                student.course.append(enrollment)
+                print(code)
+                enrollment_obj=enrollments(estudent_id=roll,ecourse_id=int(code[7]))
+                student_obj.courses.append(enrollment_obj)
                 
         db.session.commit()
     
