@@ -1,0 +1,38 @@
+<html>
+<head>
+<title> Home </title>
+</head>
+<body>
+
+<h1> Students List </h1>
+
+{% if students|length == 0 %}
+	<p> No Student Found. Add the students </p>
+{% else %}
+<table id = "all-students">
+<tr>
+<th>SNo</th>
+<th>Roll Number</th>
+<th>First Name</th>
+<th>Last Name</th>
+<th>Actions</th>
+</tr>
+{% for i in range(students|length) %}
+<tr>
+<td>{{i+1}}</td>
+<td><a href="/student/{{students[i].student_id}}">{{students[i].roll_number}}</a></td>
+<td>{{students[i].first_name}}</td>
+<td>{{students[i].last_name}}</td>
+<td>
+<a href="/student/{{students[i].student_id}}/update" type="button">Update</a>
+<a href="/student/{{students[i].student_id}}/delete" type="button">Delete</a>
+</td>
+</tr>
+{% endfor %}
+{% endif %}
+</table>
+
+
+<button onclick="window.location.href='/student/create'">Add Student</button>
+</body>
+</html>
