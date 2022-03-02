@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Details </title>
+</head>
+<body>
+<h1 align="center">Student Details </h1>
+<table id ="personal-details">
+	<tr>
+	<th> Roll Number </th>
+	<th> First Name </th>
+	<th> Last Name </th>
+	{%for student in students%}
+		<tr>
+		<td>{{student.roll_number}}</td>
+		<td>{{student.first_name}}</td>
+		<td>{{student.last_name}}</td>
+	<%endfor%>
+	</table>
+	
+<h1 align ="center">Enrollment List </h1>
+{%if students[0].course|length==0%}
+	<p align="center">Student has not enrolled in any course </p>
+{%else%}
+	<table id="enroll-table">
+		<tr>
+			<th>S.No</th>
+			<th>Course Code </th>
+			<th>Course Name</th>
+			<th>Course Description</th>
+		</tr>
+		{%for student in students%}
+		
+			{%for c in range(student.courses|length)%}
+				<tr>
+				<td>{{c+1}}</td>
+				<td>{{student.courses[c].course.course_code}}</td>
+				<td>{{student.courses[c].course.course_name}}</td>
+				<td>{{student.courses[c].course.course_description}}</td>				
+				</tr>
+			{%endfor%}
+			
+		{%endfor%}
+	</table>
+	{%endif%}
+	<a href='/'> Go Back </a>
+</body>
+</html>
+

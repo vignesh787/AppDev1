@@ -47,6 +47,55 @@ def addStudent():
     print("Inside addStudent method")
     return render_template("addStudent.html")
     
+@app.route('/student/<int:student_id>')
+def student_details(student_id):
+    try:
+        student_obj=student.query.filter(student.student_id==student_id).all()
+        
+        return render_template('sdetails.html',students=student_obj)
+    except Exception as err:
+        return render_template('error.html', msg = "An  error occured. Try Again")
+        
+@app.route('/student/<int:student_id/update' , methods=['GET','POST'])
+def update_student(student_id):
+    student_obj=student.query.filter(student.student_id==student_id).first()
+    courses_old=student_obj.courses
+    course_ids_list=[int(i.ecourse_id) for i in courses_old]
+    if request.method=='GET':
+        return render_template('update.html',student=student_obj)
+    elif request.method=='POST':
+        try:
+            fname_new=request.form['f_name]
+            lname_new=request.form['l_name']
+            courses_new=request.form.getlist('courses')
+            student_obj.first_name=fname_new
+            student_obj.alast_name=lname_new
+            
+            
+            for i in courses_old:
+                tem_course='course_'+str(i.courses.course_id)
+                if temp_course no in courses_new:
+                    enrollments.query.filter(enrollments.estudent_id==student_obj.student_id,enrollments.ecourse_id==i.courses.course_id).delete()
+                else:
+                    courses_new.remove(temp_course)
+                    
+                    
+            for i in courses_new:
+                if i[7] not in courses_old:
+                    enrollments_obj=enrollments[estudent_id=student_obj.student_id,ecourse_id[7])
+                    student_obj.course.append(enrollment_obj)
+                    
+            db.session.commit()
+            return render_template('index.html',student)
+        
+        except Exception as err:
+            db.session.rollback()
+            return render_template('error.html',msg=err)
+
+            
+                    
+                    
+    
 @app.route("/student/create", methods=["POST"])    
 def addStudentConfirm():
     print("Inside addStudentConfirm method")
